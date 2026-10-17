@@ -28,14 +28,32 @@
 
     <button id="pausa" type="button">Pausar</button>
     <p id="estado" role="status">Permite la cámara y enfoca Hiro.</p>
+
+    <div id="controlCamara">
+      <label for="camara">Cámara del teléfono</label>
+      <select id="camara" disabled>
+        <option>Detectando cámaras…</option>
+      </select>
+      <small>Si la imagen se ve ampliada o borrosa, selecciona otra cámara trasera.</small>
+      <small><a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png"
+        target="_blank" rel="noopener">Abrir el marcador Hiro correcto</a></small>
+    </div>
+
     <small>Modelo didáctico: simula el comportamiento del casco real.</small>
   </section>
 
- <a-scene
-  embedded
-  vr-mode-ui="enabled: false"
-  renderer="alpha: true; antialias: false"
-  arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best; sourceWidth: 320; sourceHeight: 240; displayWidth: 640; displayHeight: 480">
+  <a-scene
+    embedded
+    vr-mode-ui="enabled: false"
+    renderer="alpha: true; antialias: false; precision: medium; maxCanvasWidth: 720; maxCanvasHeight: 1280"
+    arjs="sourceType: webcam;
+      debugUIEnabled: false;
+      trackingMethod: artoolkit;
+      detectionMode: mono;
+      sourceWidth: 960; sourceHeight: 720;
+      displayWidth: 960; displayHeight: 720;
+      canvasWidth: 480; canvasHeight: 360;
+      maxDetectionRate: 20">
 
   <a-marker id="marcador" preset="hiro" emitevents="true">
 
@@ -60,6 +78,6 @@
   </a-marker>
 
   <a-entity camera></a-entity>
-</a-scene>
+  </a-scene>
 </body>
 </html>
