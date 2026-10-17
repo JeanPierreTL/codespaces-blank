@@ -42,42 +42,24 @@
     <small>Modelo didáctico: simula el comportamiento del casco real.</small>
   </section>
 
-  <a-scene
-    embedded
-    vr-mode-ui="enabled: false"
-    renderer="alpha: true; antialias: false; precision: medium; maxCanvasWidth: 720; maxCanvasHeight: 1280"
-    arjs="sourceType: webcam;
-      debugUIEnabled: false;
-      trackingMethod: artoolkit;
-      detectionMode: mono;
-      sourceWidth: 960; sourceHeight: 720;
-      displayWidth: 960; displayHeight: 720;
-      canvasWidth: 480; canvasHeight: 360;
-      maxDetectionRate: 20">
+  
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  renderer="alpha: true; antialias: false"
+  arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best; detectionMode: mono; maxDetectionRate: 15; canvasWidth: 320; canvasHeight: 240">
 
   <a-marker id="marcador" preset="hiro" emitevents="true">
-
-    <!-- Objeto de prueba: debe aparecer al detectar Hiro -->
-    <a-box
-      id="pruebaAR"
-      position="0 0.15 0"
-      width="0.2"
-      height="0.2"
-      depth="0.2"
-      material="shader: flat; color: red">
-    </a-box>
-
-    <!-- Tu casco original -->
     <a-entity
       id="sistema"
       casco-ciclista
       position="0 0.35 0"
       scale="0.8 0.8 0.8">
     </a-entity>
-
   </a-marker>
 
   <a-entity camera></a-entity>
-  </a-scene>
+</a-scene>
+
 </body>
 </html>
