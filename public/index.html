@@ -12,7 +12,7 @@
 </head>
 <body>
   <section id="panel" aria-label="Controles del libro">
-    <button id="alternarPanel" type="button" aria-expanded="true">Ocultar controles</button>
+    <button id="alternarPanel" type="button" aria-expanded="true">Ocultar</button>
 
     <label for="pagina">Página del libro</label>
     <select id="pagina">
@@ -37,8 +37,7 @@
         <option>Detectando cámaras…</option>
       </select>
       <small>Si la imagen se ve ampliada o borrosa, selecciona otra cámara trasera.</small>
-      <small><a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png"
-        target="_blank" rel="noopener">Abrir el marcador Hiro correcto</a></small>
+      <small><a href="marcador.html" target="_blank" rel="noopener">Abrir el marcador Hiro correcto</a></small>
       <small>Aleja el celular hasta ver completo el cuadrado negro y baja el brillo de la otra pantalla si se ve blanco.</small>
     </div>
 
@@ -47,6 +46,7 @@
 
   
   <a-scene
+    id="escenaRA"
     embedded
     vr-mode-ui="enabled: false"
     renderer="alpha: true; antialias: false; precision: medium; maxCanvasWidth: 720; maxCanvasHeight: 1280"
@@ -70,6 +70,10 @@
 
   <a-entity camera></a-entity>
   </a-scene>
+
+  <div id="guiaEscaneo" aria-hidden="true">
+    <span id="textoGuia">Coloca aquí todo el cuadrado Hiro</span>
+  </div>
 
 </body>
 </html>

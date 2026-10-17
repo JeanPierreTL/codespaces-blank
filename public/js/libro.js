@@ -21,6 +21,7 @@ const etiqueta = document.querySelector("#valorAngulo");
 const selectorCamara = document.querySelector("#camara");
 const panel = document.querySelector("#panel");
 const botonPanel = document.querySelector("#alternarPanel");
+const textoGuia = document.querySelector("#textoGuia");
 
 const CLAVE_CAMARA = "casco-ra-camara-v2";
 let cambiandoCamara = false;
@@ -153,7 +154,7 @@ selectorCamara.addEventListener("change", () => {
 
 botonPanel.addEventListener("click", () => {
   const minimizado = panel.classList.toggle("minimizado");
-  botonPanel.textContent = minimizado ? "Mostrar controles" : "Ocultar controles";
+  botonPanel.textContent = minimizado ? "Controles" : "Ocultar";
   botonPanel.setAttribute("aria-expanded", String(!minimizado));
 });
 
@@ -196,9 +197,13 @@ boton.addEventListener("click", () => {
 
 marcador.addEventListener("markerFound", () => {
   estado.textContent = "Marcador detectado. Selecciona tu página.";
+  document.body.classList.add("marcador-detectado");
+  textoGuia.textContent = "Hiro detectado";
 });
 marcador.addEventListener("markerLost", () => {
   estado.textContent = "Vuelve a enfocar el marcador completo.";
+  document.body.classList.remove("marcador-detectado");
+  textoGuia.textContent = "Coloca aquí todo el cuadrado Hiro";
 });
 window.addEventListener("camera-error", () => {
   estado.textContent = "Revisa HTTPS, permisos y disponibilidad de cámara.";
