@@ -19,8 +19,10 @@ const marcador = document.querySelector("#marcador");
 const slider = document.querySelector("#inclinacion");
 const etiqueta = document.querySelector("#valorAngulo");
 const selectorCamara = document.querySelector("#camara");
+const panel = document.querySelector("#panel");
+const botonPanel = document.querySelector("#alternarPanel");
 
-const CLAVE_CAMARA = "casco-ra-camara";
+const CLAVE_CAMARA = "casco-ra-camara-v2";
 let cambiandoCamara = false;
 let streamPreparado;
 
@@ -34,11 +36,12 @@ function mejorarEnfoque(pista) {
     ajustes.focusMode = "continuous";
   }
 
-  if (capacidades.zoom) {
-    ajustes.zoom = Math.min(
-      capacidades.zoom.max,
-      Math.max(capacidades.zoom.min, 1)
-    );
+  if (capacidades.exposureMode?.includes("continuous")) {
+    ajustes.exposureMode = "continuous";
+  }
+
+  if (capacidades.whiteBalanceMode?.includes("continuous")) {
+    ajustes.whiteBalanceMode = "continuous";
   }
 
   if (Object.keys(ajustes).length) {
@@ -103,13 +106,19 @@ async function prepararSelectorCamara(stream) {
 
   const guardada = localStorage.getItem(CLAVE_CAMARA);
   const guardadaExiste = camaras.some(camara => camara.deviceId === guardada);
-  const seleccionada = guardadaExiste ? guardada : activa;
+  const camarasTraseras = camaras.filter(camara =>
+    /back|rear|environment|trasera/i.test(camara.label)
+  );
+  const principal = camarasTraseras.find(camara =>
+    /camera\s*0(?:\D|$)/i.test(camara.label)
+  ) || camarasTraseras[0];
+  const seleccionada = guardadaExiste ? guardada : principal?.deviceId || activa;
 
   if (seleccionada) selectorCamara.value = seleccionada;
   selectorCamara.disabled = camaras.length < 2;
 
-  if (guardadaExiste && guardada !== activa) {
-    await cambiarCamara(guardada);
+  if (seleccionada && seleccionada !== activa) {
+    await cambiarCamara(seleccionada);
   }
 }
 
@@ -140,6 +149,12 @@ buscarCamaraActiva();
 
 selectorCamara.addEventListener("change", () => {
   cambiarCamara(selectorCamara.value);
+});
+
+botonPanel.addEventListener("click", () => {
+  const minimizado = panel.classList.toggle("minimizado");
+  botonPanel.textContent = minimizado ? "Mostrar controles" : "Ocultar controles";
+  botonPanel.setAttribute("aria-expanded", String(!minimizado));
 });
 
 function mostrarPagina() {

@@ -1,13 +1,24 @@
-body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+html, body {
+  width: 100vw !important; height: 100vh !important; margin: 0 !important;
+  overflow: hidden; font-family: Arial, sans-serif;
+  -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+}
 #panel {
   position: fixed; top: 12px; left: 12px; right: 12px; z-index: 10;
-  max-width: 430px; max-height: 45vh; overflow-y: auto;
+  box-sizing: border-box; max-width: 430px; max-height: 38vh; overflow-y: auto;
   padding: 12px; border-radius: 10px;
-  background: rgba(255,255,255,.94); color: #10243a;
+  background: rgba(255,255,255,.94); color: #10243a; font-size: 14px;
 }
 select, button { font: inherit; padding: 8px; }
 input[type=range] { width: 100%; }
 #contenido, #estado { margin: 8px 0; }
 #controlCamara { margin: 8px 0; }
 #controlCamara select { display: block; width: 100%; margin-top: 4px; }
+#alternarPanel { float: right; margin: 0 0 6px 8px; padding: 5px 8px; }
+#panel.minimizado {
+  right: auto; width: auto; max-width: none; min-width: 0;
+  padding: 6px; overflow: hidden;
+}
+#panel.minimizado > :not(#alternarPanel) { display: none; }
+#panel.minimizado #alternarPanel { float: none; margin: 0; }
 small { display: block; margin-top: 6px; }

@@ -12,6 +12,8 @@
 </head>
 <body>
   <section id="panel" aria-label="Controles del libro">
+    <button id="alternarPanel" type="button" aria-expanded="true">Ocultar controles</button>
+
     <label for="pagina">Página del libro</label>
     <select id="pagina">
       <option value="1">1 El casco</option>
@@ -37,17 +39,25 @@
       <small>Si la imagen se ve ampliada o borrosa, selecciona otra cámara trasera.</small>
       <small><a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png"
         target="_blank" rel="noopener">Abrir el marcador Hiro correcto</a></small>
+      <small>Aleja el celular hasta ver completo el cuadrado negro y baja el brillo de la otra pantalla si se ve blanco.</small>
     </div>
 
     <small>Modelo didáctico: simula el comportamiento del casco real.</small>
   </section>
 
   
-<a-scene
-  embedded
-  vr-mode-ui="enabled: false"
-  renderer="alpha: true; antialias: false"
-  arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best; detectionMode: mono; maxDetectionRate: 15; canvasWidth: 320; canvasHeight: 240">
+  <a-scene
+    embedded
+    vr-mode-ui="enabled: false"
+    renderer="alpha: true; antialias: false; precision: medium; maxCanvasWidth: 720; maxCanvasHeight: 1280"
+    arjs="sourceType: webcam;
+      debugUIEnabled: false;
+      trackingMethod: artoolkit;
+      detectionMode: mono;
+      sourceWidth: 960; sourceHeight: 720;
+      displayWidth: 960; displayHeight: 720;
+      canvasWidth: 480; canvasHeight: 360;
+      maxDetectionRate: 20">
 
   <a-marker id="marcador" preset="hiro" emitevents="true">
     <a-entity
@@ -59,7 +69,7 @@
   </a-marker>
 
   <a-entity camera></a-entity>
-</a-scene>
+  </a-scene>
 
 </body>
 </html>
