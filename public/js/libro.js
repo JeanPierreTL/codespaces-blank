@@ -1,201 +1,376 @@
-const textos = {
-  1: "El casco protege la cabeza y integra la electrónica. " +
-     "Observa la cúpula azul. ¿Qué componentes añadirías para señalizar giros?",
-  2: "Un sensor de movimiento (acelerómetro/giroscopio MPU6050) mide la " +
-     "inclinación de la cabeza. Identifica la placa verde sobre el casco.",
-  3: "Dos luces direccionales, izquierda y derecha, parpadean según el giro. " +
-     "Observa cuál se enciende al inclinarse el casco.",
-  4: "Mueve el control de inclinación. Desde −10° se activa la luz izquierda " +
-     "y desde +10° se activa la derecha.",
-  5: "Sistema completo: el sensor mide, Arduino decide y las luces avisan. " +
-     "Prueba valores negativos y positivos para señalizar ambos lados."
+
+"use strict";
+
+// ---------- Contenido del libro ----------
+const paginas = {
+  1: {
+    titulo: "El casco",
+    texto: "El casco protege la cabeza y integra la electrónica. " +
+           "Observa la cúpula azul. ¿Qué componentes añadirías para señalizar giros?",
+    detalles: [
+      "Cúpula azul: absorbe el impacto y protege la cabeza.",
+      "Borde blanco: es la base donde se fijan los componentes.",
+      "Visera: protege del sol y de la lluvia."
+    ]
+  },
+  2: {
+    titulo: "Sensor de movimiento",
+    texto: "Un sensor de movimiento (acelerómetro/giroscopio MPU6050) mide la " +
+           "inclinación de la cabeza. Identifica la placa verde sobre el casco.",
+    detalles: [
+      "El acelerómetro mide la inclinación respecto a la gravedad.",
+      "El giroscopio mide qué tan rápido gira la cabeza.",
+      "Envía sus datos al Arduino cada pocos milisegundos."
+    ]
+  },
+  3: {
+    titulo: "Luces direccionales",
+    texto: "Dos luces direccionales, izquierda y derecha, parpadean según el giro. " +
+           "Observa cuál se enciende al inclinarse el casco.",
+    detalles: [
+      "Luz izquierda: parpadea al inclinarse a la izquierda.",
+      "Luz derecha: parpadea al inclinarse a la derecha.",
+      "Con el casco recto, las dos permanecen apagadas."
+    ]
+  },
+  4: {
+    titulo: "Inclinación y giro",
+    texto: "Mueve el control de inclinación. Pasados ±15° se activa la luz " +
+           "del lado hacia el que te inclinas.",
+    detalles: [
+      "Negativo: inclinación a la izquierda. Positivo: a la derecha.",
+      "El umbral de activación es de ±15°.",
+      "En el Arduino, la luz se apaga al bajar de 10° (histéresis)."
+    ]
+  },
+  5: {
+    titulo: "El sistema completo",
+    texto: "Sistema completo: el sensor mide, Arduino decide y las luces avisan. " +
+           "Simulación automática de un ciclista que gira a ambos lados.",
+    detalles: [
+      "Sensor: mide la inclinación de la cabeza.",
+      "Arduino: compara el ángulo con el umbral y decide qué luz encender.",
+      "Luces: avisan a conductores y peatones hacia dónde giras."
+    ]
+  }
 };
 
-const selector = document.querySelector("#pagina");
+const TOTAL = Object.keys(paginas).length;
+
+// ---------- Referencias ----------
+const libro = document.querySelector("#libro");
 const sistema = document.querySelector("#sistema");
 const estado = document.querySelector("#estado");
+const boton = document.querySelector("#pausa");
 const marcador = document.querySelector("#marcador");
+const escenaRA = document.querySelector("#escenaRA");
 const slider = document.querySelector("#inclinacion");
+const bloqueInclinacion = document.querySelector("#bloqueInclinacion");
 const etiqueta = document.querySelector("#valorAngulo");
 const selectorCamara = document.querySelector("#camara");
-const panel = document.querySelector("#panel");
-const botonPanel = document.querySelector("#alternarPanel");
 const textoGuia = document.querySelector("#textoGuia");
+const visor = document.querySelector("#visor");
+const btnAnterior = document.querySelector("#anterior");
+const btnSiguiente = document.querySelector("#siguiente");
+const indicador = document.querySelector("#indicador");
+const detalle = document.querySelector("#detalle");
 
-const CLAVE_CAMARA = "casco-ra-camara-v2";
-let cambiandoCamara = false;
-let streamPreparado;
+let paginaActual = 1;
+let enPausa = false;
+let objetivoDetectado = false;
+let motorListo = false;
 
-function mejorarEnfoque(pista) {
-  if (!pista?.getCapabilities || !pista.applyConstraints) return;
+// ---------- Validación de elementos ----------
+if (
+  !libro || !sistema || !estado || !boton || !marcador ||
+  !escenaRA || !slider || !bloqueInclinacion || !etiqueta ||
+  !visor || !btnAnterior || !btnSiguiente || !indicador || !detalle
+) {
+  console.error(
+    "Faltan elementos HTML necesarios. Comprueba los ID de index.html."
+  );
+} else {
 
-  const capacidades = pista.getCapabilities();
-  const ajustes = {};
+  // ---------- Visor ----------
+  const raiz = document.documentElement;
+  let ultimoMarco = "";
 
-  if (capacidades.focusMode?.includes("continuous")) {
-    ajustes.focusMode = "continuous";
-  }
+  function ajustarVisor() {
+    const r = visor.getBoundingClientRect();
 
-  if (capacidades.exposureMode?.includes("continuous")) {
-    ajustes.exposureMode = "continuous";
-  }
+    if (r.width < 10 || r.height < 10) return;
 
-  if (capacidades.whiteBalanceMode?.includes("continuous")) {
-    ajustes.whiteBalanceMode = "continuous";
-  }
+    const marco = [
+      r.left,
+      r.top,
+      r.width,
+      r.height
+    ].map(Math.round);
 
-  if (Object.keys(ajustes).length) {
-    pista.applyConstraints({advanced: [ajustes]}).catch(() => {});
-  }
-}
+    const clave = marco.join(",");
 
-async function cambiarCamara(deviceId) {
-  if (!deviceId || cambiandoCamara) return;
+    if (clave === ultimoMarco) return;
 
-  const video = document.querySelector("#arjs-video");
-  if (!video) return;
+    ultimoMarco = clave;
 
-  cambiandoCamara = true;
-  selectorCamara.disabled = true;
-  estado.textContent = "Cambiando cámara…";
-
-  video.srcObject?.getTracks().forEach(track => track.stop());
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        deviceId: {exact: deviceId},
-        width: {ideal: 960},
-        height: {ideal: 720},
-        frameRate: {ideal: 24, max: 30}
-      }
+    ["x", "y", "w", "h"].forEach((k, i) => {
+      raiz.style.setProperty(`--v${k}`, marco[i] + "px");
     });
 
-    video.srcObject = stream;
-    await video.play();
-    mejorarEnfoque(stream.getVideoTracks()[0]);
-    localStorage.setItem(CLAVE_CAMARA, deviceId);
+    // Redimensiona el render de A-Frame.
     window.dispatchEvent(new Event("resize"));
-    estado.textContent = "Cámara lista. Enfoca el marcador Hiro completo.";
-  } catch (error) {
-    localStorage.removeItem(CLAVE_CAMARA);
-    estado.textContent = "No se pudo abrir esa cámara. Recargando la cámara automática…";
-    setTimeout(() => location.reload(), 1200);
-  } finally {
-    cambiandoCamara = false;
-    selectorCamara.disabled = false;
   }
-}
 
-async function prepararSelectorCamara(stream) {
-  const pistaActiva = stream.getVideoTracks()[0];
-  mejorarEnfoque(pistaActiva);
+  function actualizarGuia(texto) {
+    if (textoGuia) {
+      textoGuia.textContent = texto;
+    }
+  }
 
-  const activa = pistaActiva.getSettings?.().deviceId;
-  const dispositivos = await navigator.mediaDevices.enumerateDevices();
-  const camaras = dispositivos.filter(dispositivo => dispositivo.kind === "videoinput");
+  window.addEventListener("resize", ajustarVisor);
 
-  selectorCamara.replaceChildren();
-  camaras.forEach((camara, indice) => {
-    const opcion = document.createElement("option");
-    opcion.value = camara.deviceId;
-    opcion.textContent = `${indice + 1}. ${camara.label || "Cámara"}`;
-    selectorCamara.appendChild(opcion);
+  window.addEventListener("orientationchange", () => {
+    window.setTimeout(ajustarVisor, 250);
   });
 
-  const guardada = localStorage.getItem(CLAVE_CAMARA);
-  const guardadaExiste = camaras.some(camara => camara.deviceId === guardada);
-  const camarasTraseras = camaras.filter(camara =>
-    /back|rear|environment|trasera/i.test(camara.label)
-  );
-  const principal = camarasTraseras.find(camara =>
-    /camera\s*0(?:\D|$)/i.test(camara.label)
-  ) || camarasTraseras[0];
-  const seleccionada = guardadaExiste ? guardada : principal?.deviceId || activa;
+  if ("ResizeObserver" in window) {
+    const observador = new ResizeObserver(ajustarVisor);
 
-  if (seleccionada) selectorCamara.value = seleccionada;
-  selectorCamara.disabled = camaras.length < 2;
+    observador.observe(visor);
 
-  if (seleccionada && seleccionada !== activa) {
-    await cambiarCamara(seleccionada);
+    const encabezado = document.querySelector(".derecha header");
+
+    if (encabezado) observador.observe(encabezado);
   }
-}
 
-function iniciarSelectorCamara(stream) {
-  if (!stream || stream === streamPreparado) return;
-  streamPreparado = stream;
+  // ---------- Cámara y reconocimiento MindAR ----------
+  // MindAR administra el acceso a la cámara.
+  // No se debe buscar #arjs-video ni usar eventos de AR.js.
 
-  prepararSelectorCamara(stream).catch(error => {
-    console.warn("No se pudieron enumerar las cámaras:", error);
-    selectorCamara.replaceChildren(new Option("Cámaras no disponibles", ""));
+  if (selectorCamara) {
     selectorCamara.disabled = true;
-  });
-}
+    selectorCamara.replaceChildren();
 
-function buscarCamaraActiva() {
-  iniciarSelectorCamara(document.querySelector("#arjs-video")?.srcObject);
-}
+    const opcion = document.createElement("option");
+    opcion.value = "";
+    opcion.textContent = "Cámara administrada por MindAR";
 
-window.addEventListener("camera-init", event => {
-  iniciarSelectorCamara(event.detail.stream);
-});
+    selectorCamara.appendChild(opcion);
+  }
 
-// Si el permiso ya estaba concedido, AR.js puede iniciar la cámara antes de
-// que este script termine de registrarse y añadir el video después del evento.
-const observadorVideo = new MutationObserver(buscarCamaraActiva);
-observadorVideo.observe(document.body, {childList: true, subtree: true});
-buscarCamaraActiva();
+  marcador.addEventListener("targetFound", () => {
+    objetivoDetectado = true;
 
-selectorCamara.addEventListener("change", () => {
-  cambiarCamara(selectorCamara.value);
-});
+    document.body.classList.add("marcador-detectado");
 
-botonPanel.addEventListener("click", () => {
-  const minimizado = panel.classList.toggle("minimizado");
-  botonPanel.textContent = minimizado ? "Controles" : "Ocultar";
-  botonPanel.setAttribute("aria-expanded", String(!minimizado));
-});
+    actualizarGuia("Imagen reconocida");
 
-function mostrarPagina() {
-  const p = selector.value;
-  document.querySelector("#contenido").textContent = textos[p];
-
-  sistema.querySelectorAll("[data-paginas]").forEach(el => {
-    el.setAttribute("visible", el.dataset.paginas.split(" ").includes(p));
+    estado.textContent =
+      "Imagen reconocida. Usa los botones para cambiar de página.";
   });
 
-  slider.value = 0;
-  etiqueta.textContent = "0";
-  sistema.setAttribute("casco-ciclista", "angulo", 0);
+  marcador.addEventListener("targetLost", () => {
+    objetivoDetectado = false;
+
+    document.body.classList.remove("marcador-detectado");
+
+    actualizarGuia("Enfoca la imagen objetivo");
+
+    estado.textContent =
+      "Vuelve a enfocar la imagen objetivo.";
+  });
+
+  // Evento documentado por la integración A-Frame de MindAR.
+  escenaRA.addEventListener("arReady", () => {
+    motorListo = true;
+
+    estado.textContent =
+      "Cámara iniciada. Enfoca la imagen objetivo.";
+
+    actualizarGuia("Enfoca la imagen objetivo");
+
+    ajustarVisor();
+  });
+
+  escenaRA.addEventListener("arError", (event) => {
+    motorListo = false;
+
+    console.error(
+      "Error al iniciar MindAR:",
+      event.detail || event
+    );
+
+    estado.textContent =
+      "No se pudo iniciar la cámara. Revisa los permisos, HTTPS y la consola.";
+
+    actualizarGuia("Error al iniciar la cámara");
+  });
+
+  // ---------- Páginas del libro ----------
+  function aplicarPaginaAlCasco() {
+    const p = String(paginaActual);
+
+    sistema.querySelectorAll("[data-paginas]").forEach((elemento) => {
+      const paginasElemento = (elemento.dataset.paginas || "")
+        .split(/\s+/)
+        .filter(Boolean);
+
+      elemento.setAttribute(
+        "visible",
+        paginasElemento.includes(p)
+      );
+    });
+
+    slider.disabled = paginaActual !== 4;
+    slider.value = 0;
+    etiqueta.textContent = "0";
+
+    // Mantiene el comportamiento original:
+    // automático en páginas 3 y 5.
+    sistema.setAttribute("casco-ciclista", {
+      auto: paginaActual === 3 || paginaActual === 5,
+      angulo: 0
+    });
+  }
+
+  function mostrarPagina() {
+    const datos = paginas[paginaActual];
+
+    document.querySelector("#numeral").textContent = paginaActual;
+    document.querySelector("#titulo").textContent = datos.titulo;
+    document.querySelector("#contenido").textContent = datos.texto;
+
+    document.querySelector("#detalles").replaceChildren(
+      ...datos.detalles.map((texto) => {
+        const li = document.createElement("li");
+        li.textContent = texto;
+        return li;
+      })
+    );
+
+    indicador.textContent = `Página ${paginaActual} de ${TOTAL}`;
+
+    bloqueInclinacion.hidden = paginaActual !== 4;
+
+    btnAnterior.disabled = paginaActual === 1;
+    btnSiguiente.disabled = paginaActual === TOTAL;
+
+    detalle.scrollTop = 0;
+
+    aplicarPaginaAlCasco();
+
+    // El encabezado puede cambiar de alto.
+    requestAnimationFrame(ajustarVisor);
+  }
+
+  function irA(n) {
+    if (n < 1 || n > TOTAL || n === paginaActual) return;
+
+    const direccion = n > paginaActual ? "gira-sig" : "gira-ant";
+
+    paginaActual = n;
+
+    libro.classList.remove("gira-sig", "gira-ant");
+
+    void libro.offsetWidth;
+
+    libro.classList.add(direccion);
+
+    mostrarPagina();
+  }
+
+  btnAnterior.addEventListener("click", () => {
+    irA(paginaActual - 1);
+  });
+
+  btnSiguiente.addEventListener("click", () => {
+    irA(paginaActual + 1);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.target.closest?.("input, select, textarea")) return;
+
+    if (event.key === "ArrowRight") {
+      irA(paginaActual + 1);
+    }
+
+    if (event.key === "ArrowLeft") {
+      irA(paginaActual - 1);
+    }
+  });
+
+  // ---------- Modelo 3D ----------
+  sistema.addEventListener("loaded", aplicarPaginaAlCasco);
+
+  sistema.addEventListener("componentinitialized", (event) => {
+    if (event.detail.name === "casco-ciclista") {
+      aplicarPaginaAlCasco();
+    }
+  });
+
+  // ---------- Control de inclinación ----------
+  slider.addEventListener("input", () => {
+    const angulo = Number(slider.value);
+
+    etiqueta.textContent = String(angulo);
+
+    sistema.setAttribute("casco-ciclista", {
+      auto: false,
+      angulo
+    });
+  });
+
+  // ---------- Mensajes de dirección ----------
+  sistema.addEventListener("direccion", (event) => {
+    const lado = event.detail?.lado;
+
+    if (!lado) return;
+
+    estado.textContent = lado === "ninguno"
+      ? "Casco recto: luces apagadas."
+      : `Giro a la ${lado}: direccional ${lado} parpadeando.`;
+  });
+
+  // ---------- Pausa ----------
+  boton.addEventListener("click", () => {
+    enPausa = !enPausa;
+
+    if (enPausa) {
+      sistema.pause();
+    } else {
+      sistema.play();
+    }
+
+    boton.textContent = enPausa ? "Continuar" : "Pausar";
+
+    if (enPausa) {
+      estado.textContent = "Modelo pausado.";
+    } else if (objetivoDetectado) {
+      estado.textContent =
+        "Imagen reconocida. Puedes cambiar de página.";
+    } else if (motorListo) {
+      estado.textContent =
+        "Cámara iniciada. Enfoca la imagen objetivo.";
+    } else {
+      estado.textContent = "Iniciando cámara...";
+    }
+  });
+
+  // ---------- Inicialización ----------
+  mostrarPagina();
+
+  requestAnimationFrame(() => {
+    ajustarVisor();
+  });
+
+  // Diagnóstico si el motor no informa que está listo.
+  window.setTimeout(() => {
+    if (!motorListo) {
+      console.warn(
+        "MindAR todavía no ha emitido arReady. " +
+        "Comprueba los permisos de cámara y la carga de targets.mind."
+      );
+    }
+  }, 10000);
 }
 
-selector.addEventListener("change", mostrarPagina);
-sistema.addEventListener("loaded", mostrarPagina);
-mostrarPagina();
-
-slider.addEventListener("input", () => {
-  etiqueta.textContent = slider.value;
-  sistema.setAttribute("casco-ciclista", "angulo", Number(slider.value));
-});
-
-sistema.addEventListener("direccion", e => {
-  const l = e.detail.lado;
-  estado.textContent = l === "ninguno"
-    ? "Casco recto: luces apagadas."
-    : "Inclinación a la " + l + ": luz " + l + " encendida.";
-});
-
-marcador.addEventListener("markerFound", () => {
-  estado.textContent = "Marcador detectado. Selecciona tu página.";
-  document.body.classList.add("marcador-detectado");
-  textoGuia.textContent = "Hiro detectado";
-});
-marcador.addEventListener("markerLost", () => {
-  estado.textContent = "Vuelve a enfocar el marcador completo.";
-  document.body.classList.remove("marcador-detectado");
-  textoGuia.textContent = "Coloca aquí todo el cuadrado Hiro";
-});
-window.addEventListener("camera-error", () => {
-  estado.textContent = "Revisa HTTPS, permisos y disponibilidad de cámara.";
-});
