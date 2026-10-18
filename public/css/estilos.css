@@ -35,7 +35,22 @@ input[type=range] { width: 100%; }
   margin: 0 !important;
   transform: translate(-50%, -50%) !important;
 }
-#arjs-video { object-fit: fill !important; }
+#arjs-video {
+  z-index: 0 !important;
+  object-fit: fill !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+#escenaRA {
+  z-index: 1 !important;
+  background: transparent !important;
+}
+#escenaRA .a-canvas {
+  z-index: 1 !important;
+  background: transparent !important;
+}
+.a-enter-vr,
+.a-enter-ar { display: none !important; }
 
 #guiaEscaneo {
   position: fixed; z-index: 6; pointer-events: none;
