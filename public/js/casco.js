@@ -91,7 +91,8 @@ AFRAME.registerComponent("casco-ciclista", {
   },
 
   tick: function (t) {
-    this.inclinador.object3D.rotation.z = -THREE.MathUtils.degToRad(this.ang);
+    // En la vista trasera, Y orienta el casco hacia izquierda/derecha.
+    this.inclinador.object3D.rotation.y = THREE.MathUtils.degToRad(this.ang);
 
     const u = this.data.umbral;
     const lado = this.ang <= -u
