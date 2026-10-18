@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Casco de ciclista en 3D</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="js/casco.js?v=11"></script>
+  <script src="js/casco.js?v=12"></script>
   <style>.a-enter-vr,.a-enter-ar{display:none!important}</style>
 </head>
 <body style="margin:0">
@@ -27,6 +27,13 @@
     const auto = document.querySelector("#auto");
     const s = document.querySelector("#s");
     const g = document.querySelector("#g");
+    const parametros = new URLSearchParams(location.search);
+    if (parametros.has("giro")) {
+      const inicial = Math.max(-180, Math.min(180, Number(parametros.get("giro")) || 0));
+      g.value = inicial;
+      document.querySelector("#vg").textContent = inicial;
+      c.setAttribute("casco-ciclista", "giro", inicial);
+    }
     auto.onchange = () => c.setAttribute("casco-ciclista", {
       auto: auto.checked, angulo: Number(s.value), giro: Number(g.value)
     });

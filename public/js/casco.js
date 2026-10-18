@@ -62,15 +62,16 @@ AFRAME.registerComponent("casco-ciclista", {
     crear("a-box", {position: "0 0.579 0", width: 0.09, height: 0.022,
       depth: 0.09, color: "#172027", material: "shader: standard; metalness: .25"}, sensor);
 
-    // Página 3: direccionales planas, ajustadas a la curvatura del casco.
+    // Página 3: módulos traseros laterales (las dos "orejas" del casco).
     const luz = lado => {
       const soporte = crear("a-entity", {
-        position: `${lado * 0.43} 0.1 0.3`,
-        rotation: `0 ${lado * 38} 0`
+        position: `-0.47 0.13 ${lado * 0.3}`
       }, this.cuerpo);
-      crear("a-circle", {radius: 0.092, color: "#102638",
+      crear("a-box", {width: 0.075, height: 0.135, depth: 0.17,
+        color: "#0b4c86",
         material: "shader: standard; roughness: .55; metalness: .2"}, soporte);
-      return crear("a-circle", {position: "0 0 0.006", radius: 0.065,
+      return crear("a-box", {position: "-0.041 0 0", width: 0.012,
+        height: 0.085, depth: 0.115,
         color: "#4b3210",
         material: "shader: standard; emissive: #120b02; emissiveIntensity: .2"}, soporte);
     };
@@ -112,14 +113,14 @@ AFRAME.registerComponent("casco-ciclista", {
     if (huella === this.pintado) return;
     this.pintado = huella;
 
-    const ENC = "#ffb000", APA = "#4b3210";
-    this.luzI.setAttribute("color", lado === "izquierda" && on ? ENC : APA);
-    this.luzD.setAttribute("color", lado === "derecha" && on ? ENC : APA);
-    this.luzI.setAttribute("material", "emissive", lado === "izquierda" && on ? "#ff7800" : "#120b02");
-    this.luzD.setAttribute("material", "emissive", lado === "derecha" && on ? "#ff7800" : "#120b02");
-    this.luzI.setAttribute("material", "emissiveIntensity", lado === "izquierda" && on ? 1.5 : 0.2);
-    this.luzD.setAttribute("material", "emissiveIntensity", lado === "derecha" && on ? 1.5 : 0.2);
-    this.luzI.setAttribute("scale", lado === "izquierda" && on ? "1.12 1.12 1" : "1 1 1");
-    this.luzD.setAttribute("scale", lado === "derecha" && on ? "1.12 1.12 1" : "1 1 1");
+    const ENC = "#ffc21c", APA = "#4b3210";
+    const actualizar = (luz, activa) => {
+      luz.setAttribute("color", activa ? ENC : APA);
+      luz.setAttribute("material", "emissive", activa ? "#ff7800" : "#120b02");
+      luz.setAttribute("material", "emissiveIntensity", activa ? (on ? 1.7 : 0.85) : 0.2);
+      luz.setAttribute("scale", activa && on ? "1.08 1.08 1.08" : "1 1 1");
+    };
+    actualizar(this.luzI, lado === "izquierda");
+    actualizar(this.luzD, lado === "derecha");
   }
 });
