@@ -66,8 +66,7 @@ AFRAME.registerComponent("casco-ciclista", {
     const luz = lado => {
       const soporte = crear("a-entity", {
         position: `${lado * 0.43} 0.1 0.3`,
-        rotation: `0 ${lado * 38} 0`,
-        "data-paginas": "3 4 5"
+        rotation: `0 ${lado * 38} 0`
       }, this.cuerpo);
       crear("a-circle", {radius: 0.092, color: "#102638",
         material: "shader: standard; roughness: .55; metalness: .2"}, soporte);
@@ -96,7 +95,12 @@ AFRAME.registerComponent("casco-ciclista", {
     this.cuerpo.object3D.rotation.z = -THREE.MathUtils.degToRad(this.ang);
 
     const u = this.data.umbral;
-    const lado = this.ang < -u ? "izquierda" : this.ang > u ? "derecha" : "ninguno";
+    // El giro representa hacia dónde mira el casco. Si está centrado, la
+    // inclinación continúa funcionando como control alternativo.
+    const direccion = Math.abs(this.giro) > u ? this.giro : this.ang;
+    const lado = direccion < -u
+      ? "izquierda"
+      : direccion > u ? "derecha" : "ninguno";
     const on = Math.floor(t / 400) % 2 === 0;
 
     if (lado !== this.lado) {
@@ -113,5 +117,9 @@ AFRAME.registerComponent("casco-ciclista", {
     this.luzD.setAttribute("color", lado === "derecha" && on ? ENC : APA);
     this.luzI.setAttribute("material", "emissive", lado === "izquierda" && on ? "#ff7800" : "#120b02");
     this.luzD.setAttribute("material", "emissive", lado === "derecha" && on ? "#ff7800" : "#120b02");
+    this.luzI.setAttribute("material", "emissiveIntensity", lado === "izquierda" && on ? 1.5 : 0.2);
+    this.luzD.setAttribute("material", "emissiveIntensity", lado === "derecha" && on ? 1.5 : 0.2);
+    this.luzI.setAttribute("scale", lado === "izquierda" && on ? "1.12 1.12 1" : "1 1 1");
+    this.luzD.setAttribute("scale", lado === "derecha" && on ? "1.12 1.12 1" : "1 1 1");
   }
 });
