@@ -5,7 +5,7 @@ Libro educativo con RA (A-Frame 1.6.0 + AR.js 3.4.7) y firmware Arduino.
 ## Entregables
 
 - `public/libro.html`: libro digital con portada, índice, cinco páginas, ilustraciones y fuentes.
-- `public/index.html`: experiencia RA con marcador Hiro, selección de cámara y controles.
+- `public/index.html`: experiencia RA con marcador Hiro, selección de cámara, inclinación y vista 360°.
 - `public/presentacion.html`: presentación navegable para la exposición.
 - `INFORME.md`: informe breve del proceso, dificultades y resultados.
 - `arduino/casco_direccional/casco_direccional.ino`: firmware del prototipo.

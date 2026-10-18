@@ -5,6 +5,7 @@ const THREE = AFRAME.THREE;
 AFRAME.registerComponent("casco-ciclista", {
   schema: {
     angulo: {type: "number", default: 0},
+    giro:   {type: "number", default: 0},
     umbral: {type: "number", default: 15},
     auto:   {type: "boolean", default: false}
   },
@@ -19,38 +20,70 @@ AFRAME.registerComponent("casco-ciclista", {
 
     this.cuerpo = crear("a-entity", {}, this.el);
 
-    // Página 1: cúpula, borde y visera
-    crear("a-sphere", {radius: 0.5, "theta-length": 90, color: "#1e88e5",
-      material: "shader: flat; side: double"}, this.cuerpo);
+    // Página 1: carcasa alargada, borde, visera y detalles de seguridad.
+    crear("a-sphere", {radius: 0.52, "theta-length": 102,
+      "segments-width": 28, "segments-height": 14, scale: "1.18 1 0.86",
+      color: "#1688dc", material: "shader: standard; side: double; roughness: .62; metalness: .08"}, this.cuerpo);
     crear("a-torus", {radius: 0.5, "radius-tubular": 0.03, rotation: "90 0 0",
-      color: "#ffffff", material: "shader: flat"}, this.cuerpo);
-    crear("a-box", {position: "0 0.03 -0.52", width: 0.5, height: 0.02,
-      depth: 0.22, color: "#0d47a1", material: "shader: flat"}, this.cuerpo);
+      scale: "1.18 1 0.86", color: "#eaf7ff",
+      material: "shader: standard; roughness: .45; metalness: .2"}, this.cuerpo);
+    crear("a-box", {position: "0.57 0.02 0", width: 0.34, height: 0.035,
+      depth: 0.55, rotation: "0 0 -7", color: "#0b4c86",
+      material: "shader: standard; roughness: .55; metalness: .15"}, this.cuerpo);
+    crear("a-box", {position: "-0.54 0.19 0", width: 0.16, height: 0.065,
+      depth: 0.54, rotation: "0 0 10", color: "#0b4c86",
+      material: "shader: standard; roughness: .6"}, this.cuerpo);
+
+    // Ventilaciones superiores.
+    [["-0.27 0.43 0", "0 0 -24"], ["0 0.505 0", "0 0 0"],
+      ["0.27 0.43 0", "0 0 24"]].forEach(([position, rotation]) => {
+      crear("a-box", {position, rotation, width: 0.09, height: 0.025,
+        depth: 0.38, color: "#092235",
+        material: "shader: standard; roughness: .5; metalness: .15"}, this.cuerpo);
+    });
+
+    // Placas laterales, correas y hebilla.
+    [-1, 1].forEach(lado => {
+      crear("a-cylinder", {position: `0 0.06 ${lado * 0.445}`, radius: 0.16,
+        height: 0.032, rotation: "90 0 0", color: "#0d5f9f",
+        material: "shader: standard; roughness: .55; metalness: .18"}, this.cuerpo);
+      crear("a-cylinder", {position: `0.19 -0.25 ${lado * 0.34}`, radius: 0.018,
+        height: 0.64, rotation: "0 0 -20", color: "#202b34"}, this.cuerpo);
+      crear("a-cylinder", {position: `-0.19 -0.25 ${lado * 0.34}`, radius: 0.018,
+        height: 0.64, rotation: "0 0 20", color: "#202b34"}, this.cuerpo);
+    });
+    crear("a-box", {position: "0 -0.5 0.34", width: 0.12, height: 0.07,
+      depth: 0.05, color: "#ff9f1c", material: "shader: standard; metalness: .2"}, this.cuerpo);
 
     // Página 2: sensor de movimiento (MPU6050)
-    crear("a-box", {position: "0 0.52 0", width: 0.22, height: 0.04,
-      depth: 0.16, color: "#43a047", material: "shader: flat",
-      "data-paginas": "2 4 5"}, this.cuerpo);
+    const sensor = crear("a-entity", {"data-paginas": "2 4 5"}, this.cuerpo);
+    crear("a-box", {position: "0 0.55 0", width: 0.25, height: 0.038,
+      depth: 0.18, color: "#2ea44f", material: "shader: standard; roughness: .6"}, sensor);
+    crear("a-box", {position: "0 0.579 0", width: 0.09, height: 0.022,
+      depth: 0.09, color: "#172027", material: "shader: standard; metalness: .25"}, sensor);
 
     // Página 3: luces direccionales
-    const luz = x => crear("a-sphere", {position: `${x} 0.08 0`, radius: 0.09,
-      color: "#3a2a10", material: "shader: flat",
+    const luz = x => crear("a-sphere", {position: `${x} 0.1 0.465`, radius: 0.075,
+      color: "#4b3210", material: "shader: standard; emissive: #120b02; emissiveIntensity: .2",
       "data-paginas": "3 4 5"}, this.cuerpo);
-    this.luzI = luz(-0.5);
-    this.luzD = luz(0.5);
+    this.luzI = luz(-0.43);
+    this.luzD = luz(0.43);
 
     this.ang = 0;
+    this.giro = 0;
     this.lado = "ninguno";
     this.pintado = "";
   },
 
   update: function () {
     if (!this.data.auto) this.ang = this.data.angulo;
+    this.giro = this.data.giro;
   },
 
   tick: function (t) {
     if (this.data.auto) this.ang = 30 * Math.sin(t / 2000);
 
+    this.cuerpo.object3D.rotation.y = THREE.MathUtils.degToRad(this.giro);
     this.cuerpo.object3D.rotation.z = -THREE.MathUtils.degToRad(this.ang);
 
     const u = this.data.umbral;
@@ -66,8 +99,10 @@ AFRAME.registerComponent("casco-ciclista", {
     if (huella === this.pintado) return;
     this.pintado = huella;
 
-    const ENC = "#ffa000", APA = "#3a2a10";
+    const ENC = "#ffb000", APA = "#4b3210";
     this.luzI.setAttribute("color", lado === "izquierda" && on ? ENC : APA);
     this.luzD.setAttribute("color", lado === "derecha" && on ? ENC : APA);
+    this.luzI.setAttribute("material", "emissive", lado === "izquierda" && on ? "#ff7800" : "#120b02");
+    this.luzD.setAttribute("material", "emissive", lado === "derecha" && on ? "#ff7800" : "#120b02");
   }
 });

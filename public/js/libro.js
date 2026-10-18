@@ -18,11 +18,15 @@ const boton = document.querySelector("#pausa");
 const marcador = document.querySelector("#marcador");
 const slider = document.querySelector("#inclinacion");
 const etiqueta = document.querySelector("#valorAngulo");
+const sliderGiro = document.querySelector("#giro");
+const etiquetaGiro = document.querySelector("#valorGiro");
 const selectorCamara = document.querySelector("#camara");
 const panel = document.querySelector("#panel");
 const botonPanel = document.querySelector("#alternarPanel");
 const textoGuia = document.querySelector("#textoGuia");
 const automatico = document.querySelector("#automatico");
+const restablecer = document.querySelector("#restablecer");
+const guiaEscaneo = document.querySelector("#guiaEscaneo");
 
 const CLAVE_CAMARA = "casco-ra-camara-v2";
 let cambiandoCamara = false;
@@ -170,7 +174,11 @@ function mostrarPagina() {
   slider.value = 0;
   etiqueta.textContent = "0";
   automatico.checked = false;
-  sistema.setAttribute("casco-ciclista", {auto: false, angulo: 0});
+  sistema.setAttribute("casco-ciclista", {
+    auto: false,
+    angulo: 0,
+    giro: Number(sliderGiro.value)
+  });
 }
 
 selector.addEventListener("change", mostrarPagina);
@@ -182,14 +190,61 @@ slider.addEventListener("input", () => {
   etiqueta.textContent = slider.value;
   sistema.setAttribute("casco-ciclista", {
     auto: false,
-    angulo: Number(slider.value)
+    angulo: Number(slider.value),
+    giro: Number(sliderGiro.value)
   });
+});
+
+function normalizarGiro(valor) {
+  return ((valor + 180) % 360 + 360) % 360 - 180;
+}
+
+function aplicarGiro(valor) {
+  const giro = Math.round(normalizarGiro(valor));
+  sliderGiro.value = giro;
+  etiquetaGiro.textContent = giro;
+  sistema.setAttribute("casco-ciclista", "giro", giro);
+}
+
+sliderGiro.addEventListener("input", () => {
+  aplicarGiro(Number(sliderGiro.value));
+  estado.textContent = "Vista girada. Puedes observar todos los lados del casco.";
+});
+
+let arrastrando = false;
+let inicioX = 0;
+let giroInicial = 0;
+
+guiaEscaneo.addEventListener("pointerdown", evento => {
+  arrastrando = true;
+  inicioX = evento.clientX;
+  giroInicial = Number(sliderGiro.value);
+  guiaEscaneo.setPointerCapture?.(evento.pointerId);
+});
+
+guiaEscaneo.addEventListener("pointermove", evento => {
+  if (!arrastrando) return;
+  aplicarGiro(giroInicial + (evento.clientX - inicioX) * 0.8);
+});
+
+const terminarArrastre = () => { arrastrando = false; };
+guiaEscaneo.addEventListener("pointerup", terminarArrastre);
+guiaEscaneo.addEventListener("pointercancel", terminarArrastre);
+
+restablecer.addEventListener("click", () => {
+  automatico.checked = false;
+  slider.value = 0;
+  etiqueta.textContent = "0";
+  aplicarGiro(0);
+  sistema.setAttribute("casco-ciclista", {auto: false, angulo: 0, giro: 0});
+  estado.textContent = "Modelo centrado y control manual activado.";
 });
 
 automatico.addEventListener("change", () => {
   sistema.setAttribute("casco-ciclista", {
     auto: automatico.checked,
-    angulo: Number(slider.value)
+    angulo: Number(slider.value),
+    giro: Number(sliderGiro.value)
   });
   estado.textContent = automatico.checked
     ? "Simulación automática activada."

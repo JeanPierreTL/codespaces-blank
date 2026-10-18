@@ -54,7 +54,8 @@ input[type=range] { width: 100%; }
 .a-enter-ar { display: none !important; }
 
 #guiaEscaneo {
-  position: fixed; z-index: 6; pointer-events: none;
+  position: fixed; z-index: 6; pointer-events: auto; touch-action: none;
+  cursor: ew-resize; user-select: none;
   left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: min(68vw, 51vh); aspect-ratio: 1;
   box-sizing: border-box; border: 3px dashed rgba(255,255,255,.9);
