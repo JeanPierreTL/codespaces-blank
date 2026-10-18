@@ -16,7 +16,10 @@ AFRAME.registerComponent("casco-ciclista", {
       return e;
     };
 
-    this.cuerpo = crear("a-entity", {}, this.el);
+    // La inclinación y la orientación usan entidades separadas para evitar
+    // que sus ejes se mezclen y el casco parezca rodar en profundidad.
+    this.inclinador = crear("a-entity", {}, this.el);
+    this.cuerpo = crear("a-entity", {}, this.inclinador);
 
     // Página 1: carcasa alargada, borde, visera y detalles de seguridad.
     crear("a-sphere", {radius: 0.52, "theta-length": 102,
@@ -88,7 +91,7 @@ AFRAME.registerComponent("casco-ciclista", {
   },
 
   tick: function (t) {
-    this.cuerpo.object3D.rotation.z = -THREE.MathUtils.degToRad(this.ang);
+    this.inclinador.object3D.rotation.z = -THREE.MathUtils.degToRad(this.ang);
 
     const u = this.data.umbral;
     const lado = this.ang <= -u
