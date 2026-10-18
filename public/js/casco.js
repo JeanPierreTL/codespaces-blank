@@ -62,12 +62,21 @@ AFRAME.registerComponent("casco-ciclista", {
     crear("a-box", {position: "0 0.579 0", width: 0.09, height: 0.022,
       depth: 0.09, color: "#172027", material: "shader: standard; metalness: .25"}, sensor);
 
-    // Página 3: luces direccionales
-    const luz = x => crear("a-sphere", {position: `${x} 0.1 0.465`, radius: 0.075,
-      color: "#4b3210", material: "shader: standard; emissive: #120b02; emissiveIntensity: .2",
-      "data-paginas": "3 4 5"}, this.cuerpo);
-    this.luzI = luz(-0.43);
-    this.luzD = luz(0.43);
+    // Página 3: direccionales planas, ajustadas a la curvatura del casco.
+    const luz = lado => {
+      const soporte = crear("a-entity", {
+        position: `${lado * 0.43} 0.1 0.3`,
+        rotation: `0 ${lado * 38} 0`,
+        "data-paginas": "3 4 5"
+      }, this.cuerpo);
+      crear("a-circle", {radius: 0.092, color: "#102638",
+        material: "shader: standard; roughness: .55; metalness: .2"}, soporte);
+      return crear("a-circle", {position: "0 0 0.006", radius: 0.065,
+        color: "#4b3210",
+        material: "shader: standard; emissive: #120b02; emissiveIntensity: .2"}, soporte);
+    };
+    this.luzI = luz(-1);
+    this.luzD = luz(1);
 
     this.ang = 0;
     this.giro = 0;
