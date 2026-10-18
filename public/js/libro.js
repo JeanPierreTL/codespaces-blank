@@ -5,28 +5,22 @@ const textos = {
      "inclinación de la cabeza. Identifica la placa verde sobre el casco.",
   3: "Dos luces direccionales, izquierda y derecha, parpadean según el giro. " +
      "Observa cuál se enciende al inclinarse el casco.",
-  4: "Mueve el control de inclinación. Pasados ±15° se activa la luz " +
-     "del lado hacia el que te inclinas.",
+  4: "Mueve el control de inclinación. Desde −10° se activa la luz izquierda " +
+     "y desde +10° se activa la derecha.",
   5: "Sistema completo: el sensor mide, Arduino decide y las luces avisan. " +
-     "Simulación automática de un ciclista que gira a ambos lados."
+     "Prueba valores negativos y positivos para señalizar ambos lados."
 };
 
 const selector = document.querySelector("#pagina");
 const sistema = document.querySelector("#sistema");
 const estado = document.querySelector("#estado");
-const boton = document.querySelector("#pausa");
 const marcador = document.querySelector("#marcador");
 const slider = document.querySelector("#inclinacion");
 const etiqueta = document.querySelector("#valorAngulo");
-const sliderGiro = document.querySelector("#giro");
-const etiquetaGiro = document.querySelector("#valorGiro");
 const selectorCamara = document.querySelector("#camara");
 const panel = document.querySelector("#panel");
 const botonPanel = document.querySelector("#alternarPanel");
 const textoGuia = document.querySelector("#textoGuia");
-const automatico = document.querySelector("#automatico");
-const restablecer = document.querySelector("#restablecer");
-const guiaEscaneo = document.querySelector("#guiaEscaneo");
 
 const CLAVE_CAMARA = "casco-ra-camara-v2";
 let cambiandoCamara = false;
@@ -173,12 +167,7 @@ function mostrarPagina() {
 
   slider.value = 0;
   etiqueta.textContent = "0";
-  automatico.checked = false;
-  sistema.setAttribute("casco-ciclista", {
-    auto: false,
-    angulo: 0,
-    giro: Number(sliderGiro.value)
-  });
+  sistema.setAttribute("casco-ciclista", "angulo", 0);
 }
 
 selector.addEventListener("change", mostrarPagina);
@@ -186,83 +175,15 @@ sistema.addEventListener("loaded", mostrarPagina);
 mostrarPagina();
 
 slider.addEventListener("input", () => {
-  automatico.checked = false;
   etiqueta.textContent = slider.value;
-  sistema.setAttribute("casco-ciclista", {
-    auto: false,
-    angulo: Number(slider.value),
-    giro: Number(sliderGiro.value)
-  });
-});
-
-function normalizarGiro(valor) {
-  return ((valor + 180) % 360 + 360) % 360 - 180;
-}
-
-function aplicarGiro(valor) {
-  const giro = Math.round(normalizarGiro(valor));
-  sliderGiro.value = giro;
-  etiquetaGiro.textContent = giro;
-  sistema.setAttribute("casco-ciclista", "giro", giro);
-}
-
-sliderGiro.addEventListener("input", () => {
-  aplicarGiro(Number(sliderGiro.value));
-  estado.textContent = "Vista girada. Puedes observar todos los lados del casco.";
-});
-
-let arrastrando = false;
-let inicioX = 0;
-let giroInicial = 0;
-
-guiaEscaneo.addEventListener("pointerdown", evento => {
-  arrastrando = true;
-  inicioX = evento.clientX;
-  giroInicial = Number(sliderGiro.value);
-  guiaEscaneo.setPointerCapture?.(evento.pointerId);
-});
-
-guiaEscaneo.addEventListener("pointermove", evento => {
-  if (!arrastrando) return;
-  aplicarGiro(giroInicial + (evento.clientX - inicioX) * 0.8);
-});
-
-const terminarArrastre = () => { arrastrando = false; };
-guiaEscaneo.addEventListener("pointerup", terminarArrastre);
-guiaEscaneo.addEventListener("pointercancel", terminarArrastre);
-
-restablecer.addEventListener("click", () => {
-  automatico.checked = false;
-  slider.value = 0;
-  etiqueta.textContent = "0";
-  aplicarGiro(0);
-  sistema.setAttribute("casco-ciclista", {auto: false, angulo: 0, giro: 0});
-  estado.textContent = "Modelo centrado y control manual activado.";
-});
-
-automatico.addEventListener("change", () => {
-  sistema.setAttribute("casco-ciclista", {
-    auto: automatico.checked,
-    angulo: Number(slider.value),
-    giro: Number(sliderGiro.value)
-  });
-  estado.textContent = automatico.checked
-    ? "Simulación automática activada."
-    : "Control manual activado: mueve el deslizador.";
+  sistema.setAttribute("casco-ciclista", "angulo", Number(slider.value));
 });
 
 sistema.addEventListener("direccion", e => {
   const l = e.detail.lado;
   estado.textContent = l === "ninguno"
     ? "Casco recto: luces apagadas."
-    : "Giro a la " + l + ": direccional " + l + " parpadeando.";
-});
-
-let enPausa = false;
-boton.addEventListener("click", () => {
-  enPausa = !enPausa;
-  enPausa ? sistema.pause() : sistema.play();
-  boton.textContent = enPausa ? "Continuar" : "Pausar";
+    : "Inclinación a la " + l + ": luz " + l + " encendida.";
 });
 
 marcador.addEventListener("markerFound", () => {

@@ -12,7 +12,7 @@ Los ciclistas son usuarios vulnerables de la vía y necesitan comunicar sus mani
 
 1. Se investigó el problema de seguridad vial y el uso preventivo del casco.
 2. Se diseñó en A-Frame un casco con sensor y dos luces.
-3. Se programó una simulación con umbral de ±15°, histéresis y parpadeo.
+3. Se programó una simulación con umbral de ±10°, histéresis y parpadeo.
 4. Se integró AR.js para colocar el modelo sobre el marcador Hiro.
 5. Se probaron cámara, enfoque, rendimiento, orientación y controles en móvil.
 6. Se prepararon el libro digital, la presentación y el firmware Arduino.

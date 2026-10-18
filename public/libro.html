@@ -122,13 +122,13 @@
           <path d="M130 215h440" stroke="white" stroke-width="16" stroke-linecap="round"/>
           <path d="M350 260V65" stroke="#ff9f1c" stroke-width="7"/><path d="m350 55-14 25h28Z" fill="#ff9f1c"/>
           <path d="M350 260 210 130M350 260l140-130" stroke="#69db7c" stroke-width="6" stroke-dasharray="12 8"/>
-          <text x="45" y="305" fill="white" font-size="25">−15°: izquierda</text>
-          <text x="475" y="305" fill="white" font-size="25">+15°: derecha</text>
+          <text x="45" y="305" fill="white" font-size="25">−10°: izquierda</text>
+          <text x="475" y="305" fill="white" font-size="25">+10°: derecha</text>
         </svg>
         <figcaption>Zona central sin señal y umbrales de activación a ambos lados.</figcaption>
       </figure>
       <h3>¿Por qué existen dos umbrales?</h3>
-      <p>La luz se activa al superar 15°, pero se apaga al volver por debajo de 10°. Esta diferencia se llama <b>histéresis</b> y evita que la salida cambie rápidamente cuando el ángulo está cerca del límite.</p>
+      <p>La luz se activa al llegar a ±10°, pero se apaga al volver por debajo de 6°. Esta diferencia se llama <b>histéresis</b> y evita que la salida cambie rápidamente cuando el ángulo está cerca del límite.</p>
       <p><b>Ejemplo:</b> si el valor llega a +22°, parpadea la direccional derecha. Cuando vuelve a +8°, se apaga.</p>
     </article>
 
@@ -136,7 +136,7 @@
       <p class="etiqueta">Página 4</p><h2>Luces, algoritmo y prevención</h2>
       <p>El programa realiza el mismo ciclo muchas veces por segundo: lee el sensor, filtra el dato, compara el ángulo y actualiza las luces. El parpadeo se controla con tiempo acumulado, sin detener las demás lecturas.</p>
       <div class="flujo">
-        <span>Leer</span><b>→</b><span>Filtrar</span><b>→</b><span>Comparar ±15°</span><b>→</b><span>Parpadear</span><b>↻</b>
+        <span>Leer</span><b>→</b><span>Filtrar</span><b>→</b><span>Comparar ±10°</span><b>→</b><span>Parpadear</span><b>↻</b>
       </div>
       <h3>Uso preventivo</h3>
       <ul>
@@ -146,7 +146,7 @@
         <li>No depender únicamente del dispositivo: puede fallar o descargarse.</li>
         <li>Usar materiales reflectantes y luces reglamentarias por la noche.</li>
       </ul>
-      <p>En la experiencia RA, mueve el control entre −45° y +45°. El casco se inclina y, al superar el umbral, parpadea el indicador correspondiente. Para observar todos sus componentes, usa el control de vista 360° o arrastra horizontalmente sobre el modelo.</p>
+      <p>En la experiencia RA, mueve el control entre −45° y +45°. Desde −10° se activa la luz izquierda y desde +10° se activa la derecha. Entre −9° y +9° ambas permanecen apagadas.</p>
       <a class="accion" href="index.html">Probar inclinación en RA</a>
     </article>
 

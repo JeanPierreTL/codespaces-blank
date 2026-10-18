@@ -1,13 +1,11 @@
-// Componente: casco de ciclista con direccionales según inclinación.
-// Convención: ángulo negativo = inclinación a la izquierda; positivo = derecha.
+// Casco de ciclista con direccionales según inclinación.
+// Menor o igual a -10° = izquierda; mayor o igual a +10° = derecha.
 const THREE = AFRAME.THREE;
 
 AFRAME.registerComponent("casco-ciclista", {
   schema: {
     angulo: {type: "number", default: 0},
-    giro:   {type: "number", default: 0},
-    umbral: {type: "number", default: 15},
-    auto:   {type: "boolean", default: false}
+    umbral: {type: "number", default: 10}
   },
 
   init: function () {
@@ -78,30 +76,24 @@ AFRAME.registerComponent("casco-ciclista", {
     this.luzI = luz(-1);
     this.luzD = luz(1);
 
+    // Vista trasera fija para mantener visibles las dos direccionales.
+    this.cuerpo.object3D.rotation.y = THREE.MathUtils.degToRad(90);
     this.ang = 0;
-    this.giro = 0;
     this.lado = "ninguno";
     this.pintado = "";
   },
 
   update: function () {
-    if (!this.data.auto) this.ang = this.data.angulo;
-    this.giro = this.data.giro;
+    this.ang = this.data.angulo;
   },
 
   tick: function (t) {
-    if (this.data.auto) this.ang = 30 * Math.sin(t / 2000);
-
-    this.cuerpo.object3D.rotation.y = THREE.MathUtils.degToRad(this.giro);
     this.cuerpo.object3D.rotation.z = -THREE.MathUtils.degToRad(this.ang);
 
     const u = this.data.umbral;
-    // El giro representa hacia dónde mira el casco. Si está centrado, la
-    // inclinación continúa funcionando como control alternativo.
-    const direccion = Math.abs(this.giro) > u ? this.giro : this.ang;
-    const lado = direccion < -u
+    const lado = this.ang <= -u
       ? "izquierda"
-      : direccion > u ? "derecha" : "ninguno";
+      : this.ang >= u ? "derecha" : "ninguno";
     const on = Math.floor(t / 400) % 2 === 0;
 
     if (lado !== this.lado) {

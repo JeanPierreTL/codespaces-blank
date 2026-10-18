@@ -17,8 +17,8 @@ const uint8_t MPU = 0x68;
 const uint8_t PIN_IZQ = 5;
 const uint8_t PIN_DER = 6;
 
-const float UMBRAL_ON  = 15.0;  // grados para activar
-const float UMBRAL_OFF = 10.0;  // grados para desactivar (histéresis)
+const float UMBRAL_ON  = 10.0;  // grados para activar
+const float UMBRAL_OFF = 6.0;   // grados para desactivar (histéresis)
 const float SIGNO = 1.0;
 const unsigned long PERIODO_PARPADEO = 400; // ms
 

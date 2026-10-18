@@ -13,7 +13,6 @@ html, body {
 select, button { font: inherit; padding: 8px; }
 input[type=range] { width: 100%; }
 #contenido, #estado { margin: 8px 0; }
-.opcionAuto { display: block; margin: 7px 0; }
 #controlCamara { margin: 8px 0; }
 #controlCamara select { display: block; width: 100%; margin-top: 4px; }
 #alternarPanel { display: block; margin: 0 0 8px auto; padding: 5px 8px; }
@@ -54,8 +53,7 @@ input[type=range] { width: 100%; }
 .a-enter-ar { display: none !important; }
 
 #guiaEscaneo {
-  position: fixed; z-index: 6; pointer-events: auto; touch-action: none;
-  cursor: ew-resize; user-select: none;
+  position: fixed; z-index: 6; pointer-events: none;
   left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: min(68vw, 51vh); aspect-ratio: 1;
   box-sizing: border-box; border: 3px dashed rgba(255,255,255,.9);
