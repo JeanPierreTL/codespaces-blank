@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MotionHelmet · Libro digital</title>
+  <style>
+    :root { --azul:#075a9c; --celeste:#1e88e5; --naranja:#ff9f1c; --tinta:#132238; --claro:#eef7ff; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--tinta); background:#dbeaf4; font-family:Arial,sans-serif; line-height:1.55; }
+    .barra { position:sticky; top:0; z-index:5; display:flex; gap:16px; align-items:center; padding:10px 5vw; background:#071827; color:white; }
+    .barra a { color:white; }
+    .barra a:first-child { margin-right:auto; font-weight:700; text-decoration:none; }
+    main { width:min(960px,100%); margin:auto; background:white; box-shadow:0 0 30px #6c829855; }
+    .portada, .pagina { min-height:100vh; padding:clamp(28px,7vw,72px); border-bottom:1px solid #c9d9e5; }
+    .portada { display:grid; place-content:center; text-align:center; color:white; background:linear-gradient(145deg,#071827,#075a9c 65%,#23a6d5); }
+    .portada h1 { margin:0; font-size:clamp(46px,10vw,92px); line-height:.95; }
+    .portada p { font-size:clamp(18px,3vw,28px); }
+    .casco { width:min(420px,80vw); margin:28px auto; filter:drop-shadow(0 18px 18px #0018); }
+    h2 { color:var(--azul); font-size:clamp(28px,5vw,44px); margin-top:0; }
+    h3 { color:#164b70; }
+    .indice ol { font-size:20px; line-height:2; }
+    .indice a { color:var(--azul); }
+    .etiqueta { color:var(--naranja); font-weight:700; text-transform:uppercase; letter-spacing:.12em; }
+    .datos, .tarjetas { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; margin:24px 0; }
+    .dato, .tarjeta { padding:18px; border-radius:14px; background:var(--claro); border-left:5px solid var(--celeste); }
+    .dato strong { display:block; color:var(--azul); font-size:32px; }
+    figure { margin:28px 0; padding:18px; border-radius:16px; background:#071827; color:white; text-align:center; }
+    figure svg { display:block; width:min(100%,700px); height:auto; margin:auto; }
+    figcaption { margin-top:12px; }
+    .flujo { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:9px; margin:28px 0; }
+    .flujo span { padding:14px 18px; border-radius:12px; background:var(--azul); color:white; font-weight:700; }
+    .flujo b { color:var(--naranja); font-size:24px; }
+    table { width:100%; border-collapse:collapse; margin:20px 0; }
+    th,td { padding:11px; border:1px solid #b7cad8; text-align:left; }
+    th { background:var(--azul); color:white; }
+    .accion { display:inline-block; padding:12px 18px; border-radius:10px; background:var(--naranja); color:#18212c; font-weight:700; text-decoration:none; }
+    .fuentes { font-size:14px; }
+    .fuentes a { color:var(--azul); overflow-wrap:anywhere; }
+    @media print { .barra{display:none}.portada,.pagina{page-break-after:always;min-height:0}.pagina:last-child{page-break-after:auto}body{background:white}main{box-shadow:none} }
+  </style>
+</head>
+<body>
+  <nav class="barra">
+    <a href="#portada">MotionHelmet</a>
+    <a href="index.html">Abrir RA</a>
+    <a href="presentacion.html">Presentación</a>
+  </nav>
+  <main>
+    <header class="portada" id="portada">
+      <p class="etiqueta">Libro digital con realidad aumentada</p>
+      <h1>Motion<br>Helmet</h1>
+      <svg class="casco" viewBox="0 0 600 390" role="img" aria-label="Ilustración de casco inteligente">
+        <path d="M105 275C105 130 185 55 302 55s205 83 205 220H105Z" fill="#1e88e5" stroke="#fff" stroke-width="14"/>
+        <path d="M83 277h445" stroke="#fff" stroke-width="22" stroke-linecap="round"/>
+        <path d="M302 55v220M190 85l35 190M415 86l-36 189" stroke="#9fd7ff" stroke-width="12"/>
+        <rect x="255" y="35" width="95" height="48" rx="9" fill="#43a047" stroke="#fff" stroke-width="7"/>
+        <circle cx="115" cy="275" r="29" fill="#ff9f1c"/><circle cx="496" cy="275" r="29" fill="#ff9f1c"/>
+        <path d="M510 297h62" stroke="#0d47a1" stroke-width="22" stroke-linecap="round"/>
+      </svg>
+      <p>Casco de ciclista con direccionales activadas por inclinación</p>
+      <small>Proyecto educativo · Seguridad vial, electrónica y RA</small>
+    </header>
+
+    <section class="pagina indice" id="indice">
+      <p class="etiqueta">Contenido</p><h2>Índice</h2>
+      <ol>
+        <li><a href="#problema">El problema de seguridad vial</a></li>
+        <li><a href="#propuesta">La propuesta MotionHelmet</a></li>
+        <li><a href="#sensor">Cómo detecta la inclinación</a></li>
+        <li><a href="#direccionales">Luces, algoritmo y prevención</a></li>
+        <li><a href="#impacto">Impacto, límites y mejoras</a></li>
+      </ol>
+      <h3>¿Cómo usar la realidad aumentada?</h3>
+      <p>Abre la experiencia RA, permite la cámara y coloca el marcador Hiro completo dentro de la guía. El modelo aparece sobre el marcador. El selector cambia la información visible y el control de inclinación simula un giro.</p>
+      <a class="accion" href="index.html">Iniciar experiencia RA</a>
+    </section>
+
+    <article class="pagina" id="problema">
+      <p class="etiqueta">Página 1</p><h2>El problema de seguridad vial</h2>
+      <p>Al girar, un ciclista necesita mantener el equilibrio, observar la vía y comunicar su maniobra. Extender un brazo ayuda, pero durante la noche, con lluvia o entre vehículos puede resultar poco visible. La falta de comunicación aumenta el riesgo de una interpretación tardía por parte de otros conductores.</p>
+      <h3>Causas y consecuencias</h3>
+      <div class="tarjetas">
+        <div class="tarjeta"><b>Causas</b><br>Iluminación insuficiente, puntos ciegos, distracción, exceso de velocidad y señalización poco visible.</div>
+        <div class="tarjeta"><b>Consecuencias</b><br>Choques, caídas, traumatismos, discapacidad, costos médicos y temor a usar la bicicleta.</div>
+      </div>
+      <div class="datos">
+        <div class="dato"><strong>1,19 M</strong>de muertes viales ocurren cada año en el mundo.</div>
+        <div class="dato"><strong>&gt; 50 %</strong>de las víctimas mortales son usuarios vulnerables, entre ellos ciclistas.</div>
+        <div class="dato"><strong>−50 %</strong>en la probabilidad de lesión en la cabeza se asocia al casco de bicicleta.</div>
+      </div>
+      <p>Estos datos muestran que el casco es esencial, pero la prevención también requiere infraestructura segura, velocidad responsable, educación y buena visibilidad.</p>
+    </article>
+
+    <article class="pagina" id="propuesta">
+      <p class="etiqueta">Página 2</p><h2>La propuesta MotionHelmet</h2>
+      <p>MotionHelmet es un prototipo didáctico que incorpora un sensor de movimiento y dos luces direccionales en un casco. Cuando el usuario inclina la cabeza más allá de un umbral, el sistema hace parpadear la luz del lado correspondiente.</p>
+      <div class="flujo" aria-label="Flujo del sistema">
+        <span>Movimiento</span><b>→</b><span>MPU6050</span><b>→</b><span>Arduino</span><b>→</b><span>LED izquierdo o derecho</span>
+      </div>
+      <h3>Componentes</h3>
+      <table>
+        <thead><tr><th>Componente</th><th>Función</th></tr></thead>
+        <tbody>
+          <tr><td>Casco certificado</td><td>Protege la cabeza; no debe perforarse ni debilitarse.</td></tr>
+          <tr><td>MPU6050</td><td>Mide aceleración e inclinación en tres ejes.</td></tr>
+          <tr><td>Arduino</td><td>Filtra la señal y decide qué luz activar.</td></tr>
+          <tr><td>LED y resistencias</td><td>Comunican visualmente la dirección del giro.</td></tr>
+          <tr><td>Batería y soporte</td><td>Alimentan y sujetan el circuito de forma aislada.</td></tr>
+        </tbody>
+      </table>
+      <p>Es un apoyo visual: no sustituye las señales manuales, la observación directa ni las normas de tránsito.</p>
+    </article>
+
+    <article class="pagina" id="sensor">
+      <p class="etiqueta">Página 3</p><h2>Cómo detecta la inclinación</h2>
+      <p>El MPU6050 entrega valores de aceleración. El programa calcula el ángulo lateral o <i>roll</i> con los ejes Y y Z. Un filtro suaviza vibraciones para evitar que un pequeño movimiento encienda las luces por error.</p>
+      <figure>
+        <svg viewBox="0 0 700 330" role="img" aria-label="Ejes de inclinación y umbrales">
+          <path d="M160 210Q350 10 540 210Z" fill="#1e88e5" stroke="white" stroke-width="9"/>
+          <path d="M130 215h440" stroke="white" stroke-width="16" stroke-linecap="round"/>
+          <path d="M350 260V65" stroke="#ff9f1c" stroke-width="7"/><path d="m350 55-14 25h28Z" fill="#ff9f1c"/>
+          <path d="M350 260 210 130M350 260l140-130" stroke="#69db7c" stroke-width="6" stroke-dasharray="12 8"/>
+          <text x="45" y="305" fill="white" font-size="25">−15°: izquierda</text>
+          <text x="475" y="305" fill="white" font-size="25">+15°: derecha</text>
+        </svg>
+        <figcaption>Zona central sin señal y umbrales de activación a ambos lados.</figcaption>
+      </figure>
+      <h3>¿Por qué existen dos umbrales?</h3>
+      <p>La luz se activa al superar 15°, pero se apaga al volver por debajo de 10°. Esta diferencia se llama <b>histéresis</b> y evita que la salida cambie rápidamente cuando el ángulo está cerca del límite.</p>
+      <p><b>Ejemplo:</b> si el valor llega a +22°, parpadea la direccional derecha. Cuando vuelve a +8°, se apaga.</p>
+    </article>
+
+    <article class="pagina" id="direccionales">
+      <p class="etiqueta">Página 4</p><h2>Luces, algoritmo y prevención</h2>
+      <p>El programa realiza el mismo ciclo muchas veces por segundo: lee el sensor, filtra el dato, compara el ángulo y actualiza las luces. El parpadeo se controla con tiempo acumulado, sin detener las demás lecturas.</p>
+      <div class="flujo">
+        <span>Leer</span><b>→</b><span>Filtrar</span><b>→</b><span>Comparar ±15°</span><b>→</b><span>Parpadear</span><b>↻</b>
+      </div>
+      <h3>Uso preventivo</h3>
+      <ul>
+        <li>Revisar batería, fijación y luces antes de cada recorrido.</li>
+        <li>Usar el casco correctamente ajustado y respetar ciclovías y señales.</li>
+        <li>Señalizar con anticipación y confirmar visualmente que sea seguro girar.</li>
+        <li>No depender únicamente del dispositivo: puede fallar o descargarse.</li>
+        <li>Usar materiales reflectantes y luces reglamentarias por la noche.</li>
+      </ul>
+      <p>En la experiencia RA, mueve el control entre −45° y +45°. El casco se inclina y, al superar el umbral, parpadea el indicador correspondiente.</p>
+      <a class="accion" href="index.html">Probar inclinación en RA</a>
+    </article>
+
+    <article class="pagina" id="impacto">
+      <p class="etiqueta">Página 5</p><h2>Impacto, límites y mejoras</h2>
+      <h3>Impacto en la sociedad</h3>
+      <p>El proyecto promueve una cultura de prevención y hace visible cómo la programación puede resolver una necesidad cotidiana. También integra ciencia, electrónica, diseño 3D y comunicación digital en una actividad que puede demostrarse sin manipular un prototipo físico durante la exposición.</p>
+      <div class="tarjetas">
+        <div class="tarjeta"><b>Educativo</b><br>Relaciona sensores, ángulos, algoritmos y seguridad vial.</div>
+        <div class="tarjeta"><b>Social</b><br>Invita a respetar al ciclista como usuario vulnerable de la vía.</div>
+        <div class="tarjeta"><b>Tecnológico</b><br>La RA permite observar y ensayar el sistema desde cualquier teléfono.</div>
+      </div>
+      <h3>Limitaciones y siguientes pasos</h3>
+      <ul>
+        <li>La inclinación de la cabeza no siempre significa que el ciclista girará.</li>
+        <li>Se necesita probar el sistema con vibraciones, lluvia, autonomía y luz solar.</li>
+        <li>Una versión futura podría incluir botones manuales, sensor de frenado y carcasa impermeable.</li>
+        <li>Antes de uso real deben evaluarse ergonomía, seguridad eléctrica y normativa aplicable.</li>
+      </ul>
+      <h3>Conclusión</h3>
+      <p>MotionHelmet no reemplaza la conducción responsable. Su valor está en reforzar la comunicación del ciclista y demostrar cómo un sensor, un algoritmo y una señal luminosa pueden trabajar juntos para prevenir riesgos.</p>
+      <h3>Fuentes consultadas</h3>
+      <ul class="fuentes">
+        <li><a href="https://www.who.int/publications/b/68866">OMS, Informe sobre la situación mundial de la seguridad vial 2023</a>.</li>
+        <li><a href="https://iris.who.int/bitstream/handle/10665/336393/9789240013698-eng.pdf">OMS, Cyclist safety: an information resource for decision-makers and practitioners</a>.</li>
+        <li><a href="https://www.onsv.gob.pe/post/informe-de-siniestralidad-de-transito-fatal-de-ciclistas-2024/">ONSV Perú, Siniestralidad de tránsito fatal de ciclistas 2024</a>.</li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

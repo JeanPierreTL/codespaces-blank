@@ -22,6 +22,7 @@ const selectorCamara = document.querySelector("#camara");
 const panel = document.querySelector("#panel");
 const botonPanel = document.querySelector("#alternarPanel");
 const textoGuia = document.querySelector("#textoGuia");
+const automatico = document.querySelector("#automatico");
 
 const CLAVE_CAMARA = "casco-ra-camara-v2";
 let cambiandoCamara = false;
@@ -166,10 +167,10 @@ function mostrarPagina() {
     el.setAttribute("visible", el.dataset.paginas.split(" ").includes(p));
   });
 
-  slider.disabled = p !== "4";
   slider.value = 0;
   etiqueta.textContent = "0";
-  sistema.setAttribute("casco-ciclista", {auto: p === "3" || p === "5", angulo: 0});
+  automatico.checked = false;
+  sistema.setAttribute("casco-ciclista", {auto: false, angulo: 0});
 }
 
 selector.addEventListener("change", mostrarPagina);
@@ -177,8 +178,22 @@ sistema.addEventListener("loaded", mostrarPagina);
 mostrarPagina();
 
 slider.addEventListener("input", () => {
+  automatico.checked = false;
   etiqueta.textContent = slider.value;
-  sistema.setAttribute("casco-ciclista", "angulo", Number(slider.value));
+  sistema.setAttribute("casco-ciclista", {
+    auto: false,
+    angulo: Number(slider.value)
+  });
+});
+
+automatico.addEventListener("change", () => {
+  sistema.setAttribute("casco-ciclista", {
+    auto: automatico.checked,
+    angulo: Number(slider.value)
+  });
+  estado.textContent = automatico.checked
+    ? "Simulación automática activada."
+    : "Control manual activado: mueve el deslizador.";
 });
 
 sistema.addEventListener("direccion", e => {

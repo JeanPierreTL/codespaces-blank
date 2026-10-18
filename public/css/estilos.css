@@ -13,6 +13,7 @@ html, body {
 select, button { font: inherit; padding: 8px; }
 input[type=range] { width: 100%; }
 #contenido, #estado { margin: 8px 0; }
+.opcionAuto { display: block; margin: 7px 0; }
 #controlCamara { margin: 8px 0; }
 #controlCamara select { display: block; width: 100%; margin-top: 4px; }
 #alternarPanel { display: block; margin: 0 0 8px auto; padding: 5px 8px; }
@@ -69,3 +70,5 @@ body.marcador-detectado #guiaEscaneo {
   border-color: #5cff76; box-shadow: 0 0 12px rgba(92,255,118,.8);
 }
 small { display: block; margin-top: 6px; }
+.recursos { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 9px; }
+.recursos a { color: #075a9c; font-weight: 700; }
